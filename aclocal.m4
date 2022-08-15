@@ -744,7 +744,6 @@ _LT_CONFIG_SAVE_COMMANDS([
     cat <<_LT_EOF >> "$cfgfile"
 #! $SHELL
 # Generated automatically by $as_me ($PACKAGE) $VERSION
-# Libtool was configured on host `(hostname || uname -n) 2>/dev/null | sed 1q`:
 # NOTE: Changes made to this file will be lost: look at ltmain.sh.
 
 # Provide generalized library-building support services.
@@ -1056,8 +1055,8 @@ int forced_loaded() { return 2;}
 _LT_EOF
       echo "$LTCC $LTCFLAGS -c -o conftest.o conftest.c" >&AS_MESSAGE_LOG_FD
       $LTCC $LTCFLAGS -c -o conftest.o conftest.c 2>&AS_MESSAGE_LOG_FD
-      echo "$AR cru libconftest.a conftest.o" >&AS_MESSAGE_LOG_FD
-      $AR cru libconftest.a conftest.o 2>&AS_MESSAGE_LOG_FD
+      echo "$AR cr libconftest.a conftest.o" >&AS_MESSAGE_LOG_FD
+      $AR cr libconftest.a conftest.o 2>&AS_MESSAGE_LOG_FD
       echo "$RANLIB libconftest.a" >&AS_MESSAGE_LOG_FD
       $RANLIB libconftest.a 2>&AS_MESSAGE_LOG_FD
       cat > conftest.c << _LT_EOF
@@ -1507,7 +1506,7 @@ need_locks=$enable_libtool_lock
 m4_defun([_LT_PROG_AR],
 [AC_CHECK_TOOLS(AR, [ar], false)
 : ${AR=ar}
-: ${AR_FLAGS=cru}
+: ${AR_FLAGS=cr}
 _LT_DECL([], [AR], [1], [The archiver])
 _LT_DECL([], [AR_FLAGS], [1], [Flags to create an archive])
 
@@ -2901,6 +2900,18 @@ linux* | k*bsd*-gnu | kopensolaris*-gnu | gnu*)
   dynamic_linker='GNU/Linux ld.so'
   ;;
 
+netbsdelf*-gnu)
+  version_type=linux
+  need_lib_prefix=no
+  need_version=no
+  library_names_spec='${libname}${release}${shared_ext}$versuffix ${libname}${release}${shared_ext}$major ${libname}${shared_ext}'
+  soname_spec='${libname}${release}${shared_ext}$major'
+  shlibpath_var=LD_LIBRARY_PATH
+  shlibpath_overrides_runpath=no
+  hardcode_into_libs=yes
+  dynamic_linker='NetBSD ld.elf_so'
+  ;;
+
 netbsd*)
   version_type=sunos
   need_lib_prefix=no
@@ -3560,7 +3571,7 @@ linux* | k*bsd*-gnu | kopensolaris*-gnu | gnu*)
   lt_cv_deplibs_check_method=pass_all
   ;;
 
-netbsd*)
+netbsd* | netbsdelf*-gnu)
   if echo __ELF__ | $CC -E - | $GREP __ELF__ > /dev/null; then
     lt_cv_deplibs_check_method='match_pattern /lib[[^/]]+(\.so\.[[0-9]]+\.[[0-9]]+|_pic\.a)$'
   else
@@ -4066,7 +4077,8 @@ _LT_EOF
   if AC_TRY_EVAL(ac_compile); then
     # Now try to grab the symbols.
     nlist=conftest.nm
-    if AC_TRY_EVAL(NM conftest.$ac_objext \| "$lt_cv_sys_global_symbol_pipe" \> $nlist) && test -s "$nlist"; then
+    $ECHO "$as_me:$LINENO: $NM conftest.$ac_objext | $lt_cv_sys_global_symbol_pipe > $nlist" >&AS_MESSAGE_LOG_FD
+    if eval "$NM" conftest.$ac_objext \| "$lt_cv_sys_global_symbol_pipe" \> $nlist 2>&AS_MESSAGE_LOG_FD && test -s "$nlist"; then
       # Try sorting and uniquifying the output.
       if sort "$nlist" | uniq > "$nlist"T; then
 	mv -f "$nlist"T "$nlist"
@@ -4438,7 +4450,7 @@ m4_if([$1], [CXX], [
 	    ;;
 	esac
 	;;
-      netbsd*)
+      netbsd* | netbsdelf*-gnu)
 	;;
       *qnx* | *nto*)
         # QNX uses GNU C++, but need to define -shared option too, otherwise
@@ -4706,6 +4718,12 @@ m4_if([$1], [CXX], [
 	_LT_TAGVAR(lt_prog_compiler_pic, $1)='-KPIC'
 	_LT_TAGVAR(lt_prog_compiler_static, $1)='-static'
         ;;
+      # flang / f18. f95 an alias for gfortran or flang on Debian
+      flang* | f18* | f95*)
+	_LT_TAGVAR(lt_prog_compiler_wl, $1)='-Wl,'
+	_LT_TAGVAR(lt_prog_compiler_pic, $1)='-fPIC'
+	_LT_TAGVAR(lt_prog_compiler_static, $1)='-static'
+        ;;
       # icc used to be incompatible with GCC.
       # ICC 10 doesn't accept -KPIC any more.
       icc* | ifort*)
@@ -4950,6 +4968,9 @@ m4_if([$1], [CXX], [
       ;;
     esac
     ;;
+  linux* | k*bsd*-gnu | gnu*)
+    _LT_TAGVAR(link_all_deplibs, $1)=no
+    ;;
   *)
     _LT_TAGVAR(export_symbols_cmds, $1)='$NM $libobjs $convenience | $global_symbol_pipe | $SED '\''s/.* //'\'' | sort | uniq > $export_symbols'
     ;;
@@ -5011,6 +5032,9 @@ dnl Note also adjust exclude_expsyms for C++ above.
     ;;
   openbsd* | bitrig*)
     with_gnu_ld=no
+    ;;
+  linux* | k*bsd*-gnu | gnu*)
+    _LT_TAGVAR(link_all_deplibs, $1)=no
     ;;
   esac
 
@@ -5266,7 +5290,7 @@ _LT_EOF
       fi
       ;;
 
-    netbsd*)
+    netbsd* | netbsdelf*-gnu)
       if echo __ELF__ | $CC -E - | $GREP __ELF__ >/dev/null; then
 	_LT_TAGVAR(archive_cmds, $1)='$LD -Bshareable $libobjs $deplibs $linker_flags -o $lib'
 	wlarc=
@@ -5787,6 +5811,7 @@ _LT_EOF
 	if test yes = "$lt_cv_irix_exported_symbol"; then
           _LT_TAGVAR(archive_expsym_cmds, $1)='$CC -shared $pic_flag $libobjs $deplibs $compiler_flags $wl-soname $wl$soname `test -n "$verstring" && func_echo_all "$wl-set_version $wl$verstring"` $wl-update_registry $wl$output_objdir/so_locations $wl-exports_file $wl$export_symbols -o $lib'
 	fi
+	_LT_TAGVAR(link_all_deplibs, $1)=no
       else
 	_LT_TAGVAR(archive_cmds, $1)='$CC -shared $libobjs $deplibs $compiler_flags -soname $soname `test -n "$verstring" && func_echo_all "-set_version $verstring"` -update_registry $output_objdir/so_locations -o $lib'
 	_LT_TAGVAR(archive_expsym_cmds, $1)='$CC -shared $libobjs $deplibs $compiler_flags -soname $soname `test -n "$verstring" && func_echo_all "-set_version $verstring"` -update_registry $output_objdir/so_locations -exports_file $export_symbols -o $lib'
@@ -5808,7 +5833,7 @@ _LT_EOF
       esac
       ;;
 
-    netbsd*)
+    netbsd* | netbsdelf*-gnu)
       if echo __ELF__ | $CC -E - | $GREP __ELF__ >/dev/null; then
 	_LT_TAGVAR(archive_cmds, $1)='$LD -Bshareable -o $lib $libobjs $deplibs $linker_flags'  # a.out
       else
@@ -6430,7 +6455,7 @@ if test yes != "$_lt_caught_CXX_error"; then
       # Commands to make compiler produce verbose output that lists
       # what "hidden" libraries, object files and flags are used when
       # linking a shared library.
-      output_verbose_link_cmd='$CC -shared $CFLAGS -v conftest.$objext 2>&1 | $GREP -v "^Configured with:" | $GREP "\-L"'
+      output_verbose_link_cmd='$CC -shared $CFLAGS -v conftest.$objext 2>&1 | $GREP -v "^Configured with:" | $GREP " \-L"'
 
     else
       GXX=no
@@ -6805,7 +6830,7 @@ if test yes != "$_lt_caught_CXX_error"; then
             # explicitly linking system object files so we need to strip them
             # from the output so that they don't get included in the library
             # dependencies.
-            output_verbose_link_cmd='templist=`($CC -b $CFLAGS -v conftest.$objext 2>&1) | $EGREP "\-L"`; list= ; for z in $templist; do case $z in conftest.$objext) list="$list $z";; *.$objext);; *) list="$list $z";;esac; done; func_echo_all "$list"'
+            output_verbose_link_cmd='templist=`($CC -b $CFLAGS -v conftest.$objext 2>&1) | $EGREP " \-L"`; list= ; for z in $templist; do case $z in conftest.$objext) list="$list $z";; *.$objext);; *) list="$list $z";;esac; done; func_echo_all "$list"'
             ;;
           *)
             if test yes = "$GXX"; then
@@ -6870,7 +6895,7 @@ if test yes != "$_lt_caught_CXX_error"; then
 	    # explicitly linking system object files so we need to strip them
 	    # from the output so that they don't get included in the library
 	    # dependencies.
-	    output_verbose_link_cmd='templist=`($CC -b $CFLAGS -v conftest.$objext 2>&1) | $GREP "\-L"`; list= ; for z in $templist; do case $z in conftest.$objext) list="$list $z";; *.$objext);; *) list="$list $z";;esac; done; func_echo_all "$list"'
+	    output_verbose_link_cmd='templist=`($CC -b $CFLAGS -v conftest.$objext 2>&1) | $GREP " \-L"`; list= ; for z in $templist; do case $z in conftest.$objext) list="$list $z";; *.$objext);; *) list="$list $z";;esac; done; func_echo_all "$list"'
 	    ;;
           *)
 	    if test yes = "$GXX"; then
@@ -7209,7 +7234,7 @@ if test yes != "$_lt_caught_CXX_error"; then
 	      # Commands to make compiler produce verbose output that lists
 	      # what "hidden" libraries, object files and flags are used when
 	      # linking a shared library.
-	      output_verbose_link_cmd='$CC -shared $CFLAGS -v conftest.$objext 2>&1 | $GREP -v "^Configured with:" | $GREP "\-L"'
+	      output_verbose_link_cmd='$CC -shared $CFLAGS -v conftest.$objext 2>&1 | $GREP -v "^Configured with:" | $GREP " \-L"'
 
 	    else
 	      # FIXME: insert proper C++ library support
@@ -7293,7 +7318,7 @@ if test yes != "$_lt_caught_CXX_error"; then
 	        # Commands to make compiler produce verbose output that lists
 	        # what "hidden" libraries, object files and flags are used when
 	        # linking a shared library.
-	        output_verbose_link_cmd='$CC -shared $CFLAGS -v conftest.$objext 2>&1 | $GREP -v "^Configured with:" | $GREP "\-L"'
+	        output_verbose_link_cmd='$CC -shared $CFLAGS -v conftest.$objext 2>&1 | $GREP -v "^Configured with:" | $GREP " \-L"'
 	      else
 	        # g++ 2.7 appears to require '-G' NOT '-shared' on this
 	        # platform.
@@ -7304,7 +7329,7 @@ if test yes != "$_lt_caught_CXX_error"; then
 	        # Commands to make compiler produce verbose output that lists
 	        # what "hidden" libraries, object files and flags are used when
 	        # linking a shared library.
-	        output_verbose_link_cmd='$CC -G $CFLAGS -v conftest.$objext 2>&1 | $GREP -v "^Configured with:" | $GREP "\-L"'
+	        output_verbose_link_cmd='$CC -G $CFLAGS -v conftest.$objext 2>&1 | $GREP -v "^Configured with:" | $GREP " \-L"'
 	      fi
 
 	      _LT_TAGVAR(hardcode_libdir_flag_spec, $1)='$wl-R $wl$libdir'
@@ -9048,135 +9073,6 @@ m4_ifndef([_LT_PROG_ECHO_BACKSLASH],	[AC_DEFUN([_LT_PROG_ECHO_BACKSLASH])])
 m4_ifndef([_LT_PROG_F77],		[AC_DEFUN([_LT_PROG_F77])])
 m4_ifndef([_LT_PROG_FC],		[AC_DEFUN([_LT_PROG_FC])])
 m4_ifndef([_LT_PROG_CXX],		[AC_DEFUN([_LT_PROG_CXX])])
-
-dnl -*- mode: autoconf -*- 
-dnl
-dnl $Id: root.m4,v 1.3 2005/03/21 21:42:21 rdm Exp $
-dnl $Author: rdm $
-dnl $Date: 2005/03/21 21:42:21 $
-dnl
-dnl Autoconf macro to check for existence or ROOT on the system
-dnl Synopsis:
-dnl
-dnl  ROOT_PATH([MINIMUM-VERSION, [ACTION-IF-FOUND, [ACTION-IF-NOT-FOUND]]])
-dnl
-dnl Some examples: 
-dnl 
-dnl    ROOT_PATH(3.03/05, , AC_MSG_ERROR(Your ROOT version is too old))
-dnl    ROOT_PATH(, AC_DEFINE([HAVE_ROOT]))
-dnl 
-dnl The macro defines the following substitution variables
-dnl
-dnl    ROOTCONF           full path to root-config
-dnl    ROOTEXEC           full path to root
-dnl    ROOTCINT           full path to rootcint
-dnl    ROOTLIBDIR         Where the ROOT libraries are 
-dnl    ROOTINCDIR         Where the ROOT headers are 
-dnl    ROOTETCDIR         Where the ROOT configuration is
-dnl    ROOTCFLAGS         Extra compiler flags
-dnl    ROOTLIBS           ROOT basic libraries 
-dnl    ROOTGLIBS          ROOT basic + GUI libraries
-dnl    ROOTAUXLIBS        Auxilary libraries and linker flags for ROOT
-dnl    ROOTAUXCFLAGS      Auxilary compiler flags 
-dnl    ROOTRPATH          Same as ROOTLIBDIR
-dnl
-dnl The macro will fail if root-config and rootcint isn't found.
-dnl
-dnl Christian Holm Christensen <cholm@nbi.dk>
-dnl
-AC_DEFUN([ROOT_PATH],
-[
-  AC_ARG_WITH([rootsys],
-              [AC_HELP_STRING([--with-rootsys],
-			      [top of the ROOT installation directory])],
-    			      [user_rootsys=$withval],
-			      [user_rootsys="none"])
-  if test ! x"$user_rootsys" = xnone; then
-    rootbin="$user_rootsys/bin"
-  elif test ! x"$ROOTSYS" = x ; then 
-    rootbin="$ROOTSYS/bin"
-  else 
-   rootbin=$PATH
-  fi
-  AC_PATH_PROG(ROOTCONF, root-config , no, $rootbin)
-  AC_PATH_PROG(ROOTEXEC, root , no, $rootbin)
-  AC_PATH_PROG(ROOTCINT, rootcint , no, $rootbin)
-	
-  if test ! x"$ROOTCONF" = "xno" && \
-     test ! x"$ROOTCINT" = "xno" ; then 
-
-    # define some variables 
-    ROOTLIBDIR=`$ROOTCONF --libdir`
-    ROOTINCDIR=`$ROOTCONF --incdir`
-    ROOTETCDIR=`$ROOTCONF --etcdir`
-    ROOTCFLAGS=`$ROOTCONF --noauxcflags --cflags` 
-    ROOTLIBS=`$ROOTCONF --noauxlibs --noldflags --libs`
-    ROOTGLIBS=`$ROOTCONF --noauxlibs --noldflags --glibs`
-    ROOTAUXCFLAGS=`$ROOTCONF --auxcflags`
-    ROOTAUXLIBS=`$ROOTCONF --auxlibs`
-    ROOTRPATH=$ROOTLIBDIR
-    ROOTVERSION=`$ROOTCONF --version`
-    ROOTSOVERSION=`dirname $ROOTVERSION`
-	
-    if test $1 ; then 
-      AC_MSG_CHECKING(wether ROOT version >= [$1])
-      vers=`$ROOTCONF --version | tr './' ' ' | awk 'BEGIN { FS = " "; } { printf "%d", ($''1 * 1000 + $''2) * 1000 + $''3;}'`
-      requ=`echo $1 | tr './' ' ' | awk 'BEGIN { FS = " "; } { printf "%d", ($''1 * 1000 + $''2) * 1000 + $''3;}'`
-      if test $vers -lt $requ ; then 
-        AC_MSG_RESULT(no)
-	no_root="yes"
-      else 
-        AC_MSG_RESULT(yes)
-      fi
-    fi
-  else
-    # otherwise, we say no_root
-    no_root="yes"
-  fi
-
-  AC_SUBST(ROOTLIBDIR)
-  AC_SUBST(ROOTINCDIR)
-  AC_SUBST(ROOTETCDIR)
-  AC_SUBST(ROOTCFLAGS)
-  AC_SUBST(ROOTLIBS)
-  AC_SUBST(ROOTGLIBS) 
-  AC_SUBST(ROOTAUXLIBS)
-  AC_SUBST(ROOTAUXCFLAGS)
-  AC_SUBST(ROOTRPATH)
-  AC_SUBST(ROOTVERSION)
-  AC_SUBST(ROOTSOVERSION)
-
-  if test "x$no_root" = "x" ; then 
-    ifelse([$2], , :, [$2])     
-  else 
-    ifelse([$3], , :, [$3])     
-  fi
-])
-
-#
-# Macro to check if ROOT has a specific feature:
-#
-#   ROOT_FEATURE(FEATURE,[ACTION_IF_HAVE,[ACTION_IF_NOT]])
-#
-# For example 
-#
-#   ROOT_FEATURE([ldap],[AC_DEFINE([HAVE_ROOT_LDAP])])
-# 
-AC_DEFUN([ROOT_FEATURE],
-[
-  AC_REQUIRE([ROOT_PATH])
-  feat=$1
-  res=`$ROOTCONF --has-$feat` 
-  if test "x$res" = "xyes" ; then 
-    ifelse([$2], , :, [$2])     
-  else 
-    ifelse([$3], , :, [$3])     
-  fi
-])
-
-#
-# EOF
-#
 
 # Copyright (C) 2002-2018 Free Software Foundation, Inc.
 #

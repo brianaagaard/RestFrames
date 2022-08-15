@@ -376,21 +376,7 @@ PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 RANLIB = @RANLIB@
-ROOTAUXCFLAGS = @ROOTAUXCFLAGS@
-ROOTAUXLIBS = @ROOTAUXLIBS@
-ROOTCFLAGS = @ROOTCFLAGS@
-ROOTCINT = @ROOTCINT@
 ROOTCLING = @ROOTCLING@
-ROOTCONF = @ROOTCONF@
-ROOTETCDIR = @ROOTETCDIR@
-ROOTEXEC = @ROOTEXEC@
-ROOTGLIBS = @ROOTGLIBS@
-ROOTINCDIR = @ROOTINCDIR@
-ROOTLIBDIR = @ROOTLIBDIR@
-ROOTLIBS = @ROOTLIBS@ @ROOTAUXLIBS@
-ROOTRPATH = @ROOTRPATH@
-ROOTSOVERSION = @ROOTSOVERSION@
-ROOTVERSION = @ROOTVERSION@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -443,6 +429,7 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
+runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
@@ -482,7 +469,10 @@ libRestFrames_la_SOURCES = RFBase.cc RFKey.cc RFList.cc RFLog.cc RFPlot.cc RFCha
 nodist_libRestFrames_la_SOURCES = libRestFrames_rdict.cxx
 BUILT_SOURCES = libRestFrames_rdict.cxx
 CLEANFILES = *_rdict.* *_rdict_* *.rootmap *~
+ROOTCONF = @ROOTCONF@
+ROOTCINT = @ROOTCINT@
 ROOTLDFLAGS = -L@ROOTLIBDIR@
+ROOTLIBS = @ROOTLIBS@ @ROOTAUXLIBS@
 ROOTCXXFLAGS = @ROOTCFLAGS@ 
 ROOTAUXCXXFLAGS = @ROOTAUXCFLAGS@
 RestFrameslib_DATA = libRestFrames.rootmap $(am__append_1)
@@ -1416,7 +1406,7 @@ uninstall-hook:
 @EXISTROOTCLING_TRUE@libRestFrames_rdict.pcm: libRestFrames_rdict.cxx
 
 @EXISTROOTCLING_TRUE@libRestFrames_rdict.cxx: $(includestuff)/RestFrames/*.hh $(includestuff)/RestFrames/RestFrames_LinkDef.h
-@EXISTROOTCLING_TRUE@	$(ROOTCINT) -f $@ -s libRestFrames -rml libRestFrames -rmf libRestFrames.rootmap -c -I$(includestuff) $(ROOTAUXCXXFLAGS) $(ROOTCXXFLAGS) $(include_headers) $(includestuff)/RestFrames/RestFrames_LinkDef.h
+@EXISTROOTCLING_TRUE@	$(ROOTCINT) -f $@ -s libRestFrames -rml libRestFrames -rmf libRestFrames.rootmap -I$(includestuff) $(ROOTCXXFLAGS) $(include_headers) $(includestuff)/RestFrames/RestFrames_LinkDef.h
 
 @EXISTROOTCLING_TRUE@libRestFrames.rootmap: libRestFrames_rdict.cxx
 
